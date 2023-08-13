@@ -94,9 +94,11 @@ func main() {
 
 	onlyInA, onlyInB := diffPath(a, b)
 
+	fmt.Println("Only in " + arg1)
 	diplayPath(onlyInA)
 
 	fmt.Println("----")
 
+	fmt.Println("Only in " + arg2)
 	diplayPath(onlyInB)
 }
