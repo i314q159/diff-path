@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+diff-path
 
 # Test binary, built with `go test -c`
 *.test

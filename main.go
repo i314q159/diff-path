@@ -77,7 +77,7 @@ func diplayPath(paths []string) {
 }
 
 func main() {
-	var ignoreDirs = []string{".git"}
+	var ignoreDirs = []string{".git", ".repo"}
 
 	arg1 := os.Args[1]
 	arg2 := os.Args[2]
