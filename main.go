@@ -4,19 +4,12 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
+	"sort"
 )
 
 func getPaths(root string, ignore []string) ([]string, error) {
 	var paths []string
 	absRoot, _ := filepath.Abs(root)
-
-	var separator string
-	if runtime.GOOS == "windows" {
-		separator = "\\"
-	} else {
-		separator = "/"
-	}
 
 	err := filepath.Walk(absRoot, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -31,7 +24,7 @@ func getPaths(root string, ignore []string) ([]string, error) {
 
 		relPath, _ := filepath.Rel(absRoot, path)
 		if info.IsDir() {
-			relPath += separator
+			relPath += string(os.PathSeparator)
 		}
 
 		paths = append(paths, relPath)
@@ -71,6 +64,7 @@ func diffPath(a, b []string) ([]string, []string) {
 }
 
 func diplayPath(paths []string) {
+	sort.Strings(paths)
 	for _, path := range paths {
 		fmt.Println(path)
 	}
