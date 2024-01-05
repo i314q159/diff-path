@@ -63,7 +63,7 @@ func diffPath(a, b []string) ([]string, []string) {
 
 }
 
-func diplayPath(paths []string) {
+func displayPath(paths []string) {
 	sort.Strings(paths)
 	for _, path := range paths {
 		fmt.Println(path)
@@ -89,10 +89,10 @@ func main() {
 	onlyInA, onlyInB := diffPath(a, b)
 
 	fmt.Println("Only in " + arg1)
-	diplayPath(onlyInA)
+	displayPath(onlyInA)
 
 	fmt.Println("----")
 
 	fmt.Println("Only in " + arg2)
-	diplayPath(onlyInB)
+	displayPath(onlyInB)
 }
