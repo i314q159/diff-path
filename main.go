@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"time"
 )
 
 func getPaths(root string, ignore []string) ([]string, error) {
@@ -63,14 +64,21 @@ func diffPath(a, b []string) ([]string, []string) {
 
 }
 
-func displayPath(paths []string) {
+func displayPath(paths []string) []string {
 	sort.Strings(paths)
-	for _, path := range paths {
-		fmt.Println(path)
-	}
+
+	return paths
 }
 
 func main() {
+	filename := time.Now().Format("2006-01-02_15-04-05") + ".txt"
+
+	file, err := os.Create(filename)
+	if err != nil {
+		fmt.Println("创建文件失败:", err)
+		return
+	}
+
 	var ignoreDirs = []string{".git", ".repo"}
 
 	arg1 := os.Args[1]
@@ -88,11 +96,20 @@ func main() {
 
 	onlyInA, onlyInB := diffPath(a, b)
 
-	fmt.Println("Only in " + arg1)
-	displayPath(onlyInA)
+	file.WriteString("Only in " + arg1 + "\n")
+	pathsA := displayPath(onlyInA)
+	for _, path := range pathsA {
+		file.WriteString(path + "\n")
+	}
 
-	fmt.Println("----")
+	file.WriteString("----\n")
 
-	fmt.Println("Only in " + arg2)
-	displayPath(onlyInB)
+	file.WriteString("Only in " + arg2 + "\n")
+	pathsB := displayPath(onlyInB)
+	for _, path := range pathsB {
+		file.WriteString(path + "\n")
+	}
+
+	defer file.Close()
+
 }
