@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"bufio"
 	"os"
 	"path/filepath"
 	"sort"
@@ -75,9 +75,9 @@ func main() {
 
 	file, err := os.Create(filename)
 	if err != nil {
-		fmt.Println("创建文件失败:", err)
-		return
+		panic(err)
 	}
+	defer file.Close()
 
 	var ignoreDirs = []string{".git", ".repo"}
 
@@ -96,20 +96,23 @@ func main() {
 
 	onlyInA, onlyInB := diffPath(a, b)
 
-	file.WriteString("Only in " + arg1 + "\n")
+	writer := bufio.NewWriter(file)
+
+	writer.WriteString("Only in " + arg1 + "\n")
+
 	pathsA := displayPath(onlyInA)
 	for _, path := range pathsA {
-		file.WriteString(path + "\n")
+		writer.WriteString(path + "\n")
 	}
 
-	file.WriteString("----\n")
+	writer.WriteString("----\n")
 
-	file.WriteString("Only in " + arg2 + "\n")
+	writer.WriteString("Only in " + arg2 + "\n")
+
 	pathsB := displayPath(onlyInB)
 	for _, path := range pathsB {
-		file.WriteString(path + "\n")
+		writer.WriteString(path + "\n")
 	}
 
-	defer file.Close()
-
+	writer.Flush()
 }
