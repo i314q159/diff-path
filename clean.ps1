@@ -1,0 +1,2 @@
+rm *.exe
+rm *.txt
