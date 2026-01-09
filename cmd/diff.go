@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -37,39 +38,38 @@ func getPaths(root string, ignore []string) ([]string, error) {
 	return paths, err
 }
 
-func diffPath(a, b []string) ([]string, []string) {
-
-	mapA := make(map[string]struct{})
-	for _, p := range a {
-		mapA[p] = struct{}{}
-	}
-
-	mapB := make(map[string]struct{})
-	for _, p := range b {
-		mapB[p] = struct{}{}
-	}
+// 双指针法
+func diffPathSorted(a, b []string) ([]string, []string) {
+	sort.Strings(a)
+	sort.Strings(b)
 
 	var onlyInA, onlyInB []string
-	for p := range mapA {
-		if _, ok := mapB[p]; !ok {
-			onlyInA = append(onlyInA, p)
+	i, j := 0, 0
+
+	for i < len(a) && j < len(b) {
+		cmp := strings.Compare(a[i], b[j])
+		switch {
+		case cmp < 0:
+			onlyInA = append(onlyInA, a[i])
+			i++
+		case cmp > 0:
+			onlyInB = append(onlyInB, b[j])
+			j++
+		default:
+			i++
+			j++
 		}
 	}
 
-	for p := range mapB {
-		if _, ok := mapA[p]; !ok {
-			onlyInB = append(onlyInB, p)
-		}
+	// 处理剩余元素
+	for ; i < len(a); i++ {
+		onlyInA = append(onlyInA, a[i])
+	}
+	for ; j < len(b); j++ {
+		onlyInB = append(onlyInB, b[j])
 	}
 
 	return onlyInA, onlyInB
-
-}
-
-func displayPath(paths []string) []string {
-	sort.Strings(paths)
-
-	return paths
 }
 
 var DiffCmd = &cobra.Command{
@@ -100,23 +100,21 @@ var DiffCmd = &cobra.Command{
 			panic(err)
 		}
 
-		onlyInA, onlyInB := diffPath(a, b)
+		onlyInA, onlyInB := diffPathSorted(a, b)
 
 		writer := bufio.NewWriter(file)
 
 		writer.WriteString("Only in " + arg1 + "\n")
 
-		pathsA := displayPath(onlyInA)
-		for _, path := range pathsA {
+		for _, path := range onlyInA {
 			writer.WriteString(path + "\n")
 		}
 
-		writer.WriteString("----\n")
+		writer.WriteString(strings.Repeat("-", 100) + "\n")
 
 		writer.WriteString("Only in " + arg2 + "\n")
 
-		pathsB := displayPath(onlyInB)
-		for _, path := range pathsB {
+		for _, path := range onlyInB {
 			writer.WriteString(path + "\n")
 		}
 
