@@ -125,7 +125,7 @@ var DiffCmd = &cobra.Command{
 		writer.WriteString("Only in " + arg1 + "\n")
 
 		for _, path := range onlyInA {
-			writer.WriteString(path + "\n")
+			writer.WriteString("\t" + path + "\n")
 		}
 
 		writer.WriteString(strings.Repeat("-", 100) + "\n")
@@ -133,7 +133,7 @@ var DiffCmd = &cobra.Command{
 		writer.WriteString("Only in " + arg2 + "\n")
 
 		for _, path := range onlyInB {
-			writer.WriteString(path + "\n")
+			writer.WriteString("\t" + path + "\n")
 		}
 
 		writer.Flush()
