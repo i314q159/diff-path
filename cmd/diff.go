@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -90,14 +91,31 @@ var DiffCmd = &cobra.Command{
 		arg1 := args[0]
 		arg2 := args[1]
 
-		a, err := getPaths(arg1, ignoreDirs)
-		if err != nil {
-			panic(err)
+		// 并发获取两个目录的文件列表
+		var a, b []string
+		var err1, err2 error
+		var wg sync.WaitGroup
+		wg.Add(2)
+
+		go func() {
+			defer wg.Done()
+			a, err1 = getPaths(arg1, ignoreDirs)
+		}()
+
+		go func() {
+			defer wg.Done()
+			b, err2 = getPaths(arg2, ignoreDirs)
+		}()
+
+		// 等待两个遍历任务完成
+		wg.Wait()
+
+		if err1 != nil {
+			panic(err1)
 		}
 
-		b, err := getPaths(arg2, ignoreDirs)
-		if err != nil {
-			panic(err)
+		if err2 != nil {
+			panic(err2)
 		}
 
 		onlyInA, onlyInB := diffPathSorted(a, b)
