@@ -122,18 +122,27 @@ var DiffCmd = &cobra.Command{
 
 		writer := bufio.NewWriter(file)
 
-		writer.WriteString("Only in " + arg1 + "\n")
+		writer.WriteString("Only in ")
+		writer.WriteString(arg1)
+		writer.WriteString("\n")
 
 		for _, path := range onlyInA {
-			writer.WriteString("\t" + path + "\n")
+			writer.WriteString("\t")
+			writer.WriteString(path)
+			writer.WriteString("\n")
 		}
 
-		writer.WriteString(strings.Repeat("-", 100) + "\n")
+		writer.WriteString(strings.Repeat("-", 100))
+		writer.WriteString("\n")
 
-		writer.WriteString("Only in " + arg2 + "\n")
+		writer.WriteString("Only in ")
+		writer.WriteString(arg2)
+		writer.WriteString("\n")
 
 		for _, path := range onlyInB {
-			writer.WriteString("\t" + path + "\n")
+			writer.WriteString("\t")
+			writer.WriteString(path)
+			writer.WriteString("\n")
 		}
 
 		writer.Flush()
